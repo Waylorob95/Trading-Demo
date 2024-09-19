@@ -1,0 +1,35 @@
+Spring boot
+Spring security
+Jwt
+Java mailsender
+MySQL db
+
+React
+Tailwind
+Redux
+Shadcn UI
+
+Gemini api
+Coingecko api
+
+3306
+MySQL password user123
+
+SignUp ---> Send OTP ---> Enable TFA
+LonIn ---> Verify OTP --> Get JWT Token for other restpoints
+
+Set Up the project with dependencies
+Create the Entity classes
+Create the repositories
+Create the controllers
+csfr
+cors
+
+Create the register method
+Create the login method
+Two factor auth with auth controller
+UserController with UserService(Enable and send OTP)
+
+
+
+
