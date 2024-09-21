@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public User disableOtpAuthentication(User user) {
 
-        if(user.getTwoFactorAuth().equals(true)){
+        if(user.getTwoFactorAuth().isEnable()){
             user.getTwoFactorAuth().setEnable(false);
             return userRepository.save(user);
         } else {

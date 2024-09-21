@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stan.cryptoTrading.modal.Coin;
 import com.stan.cryptoTrading.service.CoinService;
-import com.stan.cryptoTrading.service.CoinServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
