@@ -36,10 +36,17 @@ This section explains the high-level workflow of the key services in the **Tradi
 
 ### 1. User Registration and Authentication
 - A user signs up and authenticates using **JWT tokens**.
+- Send an OTP vie email in order to use it to enable the Two-Factor Authentication
 - Two-Factor Authentication (TFA) should be enabled via email using the **UserService**.
 - Once authenticated, a **wallet** is automatically created for the user by the **WalletService**.
 
-### 2. Creating an Order (Buy/Sell)
+### 2. Crypto Search
+- Get crypto coin by keyword
+- Get crypto coin by market cap
+- Get crypto price chart(for days/weeks/months)
+- Get trending crypto coins
+
+### 3. Creating an Order (Buy/Sell)
 When a user initiates a buy or sell operation, the following steps occur:
 
 #### Buy Order Workflow
@@ -60,12 +67,12 @@ When a user initiates a buy or sell operation, the following steps occur:
 4. The asset quantity is updated or deleted if all the assets are sold.
 5. The order is marked as **COMPLETED** and saved.
 
-### 3. Payment Workflow
+### 4. Payment Workflow
 - Payments are processed via the **WalletService**.
 - For buy orders, the wallet balance is deducted.
 - For sell orders, the wallet balance is increased.
 
-### 4. Asset Management
+### 5. Asset Management
 - The **AssetService** is responsible for managing user assets (cryptocurrencies).
 - It ensures that the correct quantities are updated during buy and sell transactions.
 - Assets can be created, updated, or deleted based on user actions.
@@ -73,7 +80,7 @@ When a user initiates a buy or sell operation, the following steps occur:
 ## Testing with Postman
 - Open Postman.
 - Create a new request and set the request type (GET, POST, etc.).
-- Enter the API endpoint URL (e.g., http://localhost:8080/api/signup).
+- Enter the API endpoint URL (e.g., http://localhost:2120/auth/signup).
 - For POST requests, add the JSON body under the Body tab and select raw and JSON format.
 - Click Send to test the API.
 
