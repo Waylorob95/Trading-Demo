@@ -14,6 +14,7 @@
 ## Prerequisites
 Ensure the following are installed on your system:
 - **Java JDK** (Version 17 or higher)
+- **Spring Boot** (Version 3.2.9) - Spring Boot is the framework used for building the application
 - **Maven** for project build and dependency management.
 - **MySQL**
 - **Postman** (or another API testing tool) for testing API endpoints.
