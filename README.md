@@ -1,7 +1,7 @@
 # Trading-Demo
 
 ## Overview
-**Trading-Demo** is a demo crypto trading platform that allows users to sign up, securely authenticate using JWT tokens, and enable Two-Factor Authentication (TFA) via email. The platform provides the ability to search for cryptocurrencies by keyword or ID, view detailed information about specific coins, manage a personal wallet, and create orders to buy or sell coins.
+**Trading-Demo** is a demo crypto trading platform that allows users to sign up, securely authenticate using JWT tokens, and enable Two-Factor Authentication (TFA) via email. The platform provides the ability to search for cryptocurrencies by keyword or ID, view detailed information about specific coins, manage a personal wallet, and create orders to buy or sell coins. IF you choose not to enable TFA you will only be able to search for crypto coins and all the other functionalities won't be available to you.
 
 ## Features
 - **User SignUp & SignIn**: Create a new account and securely sign in.
@@ -37,7 +37,7 @@ This section explains the high-level workflow of the key services in the **Tradi
 
 ### 1. User Registration and Authentication
 - A user signs up and authenticates using **JWT tokens**.
-- Send an OTP vie email in order to use it to enable the Two-Factor Authentication
+- Send an OTP via email in order to use it to enable the Two-Factor Authentication
 - Two-Factor Authentication (TFA) should be enabled via email using the **UserService**.
 - Once authenticated, a **wallet** is automatically created for the user by the **WalletService**.
 
