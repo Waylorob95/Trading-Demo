@@ -12,30 +12,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
-    @Autowired
-    private JavaMailSender javaMailSender;
 
-    //Method for creating the mail(subject and body) and then send it
- //   public void sendVerification(String email, String otp) throws MessagingException {
-//        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-//        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,true, "utf-8");
-//
-//        String subject = "VerificationCode of OTP";
-//        String body = "Your OTP is: " + otp;
-//
-//        mimeMessage.setFrom("waylorob@gmail.com");
-//
-//        mimeMessageHelper.setFrom("waylorob@gmail.com");
-//        mimeMessageHelper.setTo(email);
-//        mimeMessageHelper.setSubject(subject);
-//        mimeMessageHelper.setText(body);
-//
-//        try {
-//            javaMailSender.send(mimeMessage);
-//        } catch (MailException mailException){
-//            throw new MailSendException(mailException.getMessage());
-//        }
-//    }
+    private final JavaMailSender javaMailSender;
+
+    public EmailService(JavaMailSender javaMailSender) {
+        this.javaMailSender = javaMailSender;
+    }
+
     public void sendVerification(String email, String otp) throws MessagingException {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("waylorob@gmail.com");

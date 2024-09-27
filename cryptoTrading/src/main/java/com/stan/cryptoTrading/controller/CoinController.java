@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stan.cryptoTrading.modal.Coin;
 import com.stan.cryptoTrading.service.CoinService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,11 +14,14 @@ import java.util.List;
 @RequestMapping("/coins")
 public class CoinController {
 
-    @Autowired
-    private CoinService coinService;
+    private final CoinService coinService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
+
+    public CoinController(CoinService coinService, ObjectMapper objectMapper) {
+        this.coinService = coinService;
+        this.objectMapper = objectMapper;
+    }
 
     @GetMapping
     ResponseEntity<List<Coin>> getCoinList(@RequestParam("page") int page) throws Exception {
@@ -40,14 +42,7 @@ public class CoinController {
         JsonNode jsonNode = objectMapper.readTree(res);
         return new ResponseEntity<>(jsonNode, HttpStatus.ACCEPTED);
     }
-    //currently not working
-//    @GetMapping("/top-50")
-//    ResponseEntity<JsonNode> getTop50CoinMarketCap() throws Exception {
 
-//        String res = coinService.getTop50CoinMarketCap();
-//        JsonNode jsonNode = objectMapper.readTree(res);
-//        return new ResponseEntity<>(jsonNode, HttpStatus.ACCEPTED);
-//    }
 
     @GetMapping("/trending")
     ResponseEntity<JsonNode> getTrendingCoins() throws Exception {

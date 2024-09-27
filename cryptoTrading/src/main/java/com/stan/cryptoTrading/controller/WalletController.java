@@ -7,7 +7,6 @@ import com.stan.cryptoTrading.modal.WalletTransaction;
 import com.stan.cryptoTrading.service.OrderService;
 import com.stan.cryptoTrading.service.UserServiceImpl;
 import com.stan.cryptoTrading.service.WalletServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,15 +15,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/wallet")
 public class WalletController {
 
-    @Autowired
-    private WalletServiceImpl walletService;
+    private final WalletServiceImpl walletService;
 
-    @Autowired
-    private UserServiceImpl userService;
+    private final UserServiceImpl userService;
 
-    @Autowired
-    private OrderService orderService;
+    private final OrderService orderService;
 
+    public WalletController(WalletServiceImpl walletService, UserServiceImpl userService, OrderService orderService) {
+        this.walletService = walletService;
+        this.userService = userService;
+        this.orderService = orderService;
+    }
 
     @GetMapping
     public ResponseEntity<Wallet> getUserWallet(@RequestHeader("Authorization") String jwt){
@@ -40,29 +41,41 @@ public class WalletController {
                                                    @PathVariable long walletId,
                                                    @RequestBody WalletTransaction walletTransaction) throws Exception {
         User sender = userService.findUserByJwt(jwt);
+
+        if(!sender.getTwoFactorAuth().isEnable()) {
+            return new ResponseEntity<>("You have to enable TFA in order to transfer", HttpStatus.FORBIDDEN);
+
+        }
         Wallet receiverWallet = walletService.findWalletById(walletId);
         Wallet senderWallet = walletService.transferToWallet(sender, receiverWallet, walletTransaction.getAmount());
 
         return new ResponseEntity<>("You have send " + walletTransaction.getAmount() + ". You are left with " + senderWallet.getBalance(), HttpStatus.OK);
     }
 
-    @PutMapping("{walletId}/deposit")
+    @PutMapping("/deposit")
     public ResponseEntity<String> depositToWallet(@RequestHeader("Authorization") String jwt,
-                                                  @PathVariable long walletId,
                                                    @RequestParam Long amount) throws Exception {
         User user = userService.findUserByJwt(jwt);
-        Wallet wallet = walletService.findWalletById(walletId);
 
+        if(!user.getTwoFactorAuth().isEnable()){
+            return new ResponseEntity<>("You have to enable TFA in order to deposit", HttpStatus.FORBIDDEN);
+        }
+
+        Wallet wallet = walletService.getUserWallet(user);
         walletService.addBalance(wallet, amount);
-
 
         return new ResponseEntity<>("You have deposited " + amount + ". You have:  " + wallet.getBalance(), HttpStatus.OK);
     }
 
     @PutMapping("api/wallet/order/{orderId}/pay")
-    public ResponseEntity<Wallet> payOrderPayment(@RequestHeader("Authorization") String jwt,
+    public ResponseEntity<?> payOrderPayment(@RequestHeader("Authorization") String jwt,
                                                   @PathVariable long orderId) throws Exception {
         User user = userService.findUserByJwt(jwt);
+
+        if(!user.getTwoFactorAuth().isEnable()){
+            return new ResponseEntity<>("You have to enable TFA in order to proceed the order", HttpStatus.FORBIDDEN);
+        }
+
         Order order = orderService.getOrderById(orderId);
         Wallet wallet = walletService.payOrderPayment(order, user);
 

@@ -6,7 +6,7 @@ import com.stan.cryptoTrading.modal.Withdrawal;
 import com.stan.cryptoTrading.service.UserService;
 import com.stan.cryptoTrading.service.WalletService;
 import com.stan.cryptoTrading.service.WithdrawalService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,27 +15,34 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/withdrawals")
 public class WithdrawalController {
-    @Autowired
-    private WithdrawalService withdrawalService;
+    private final WithdrawalService withdrawalService;
 
-    @Autowired
-    private WalletService walletService;
+    private final WalletService walletService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public WithdrawalController(WithdrawalService withdrawalService, WalletService walletService, UserService userService) {
+        this.withdrawalService = withdrawalService;
+        this.walletService = walletService;
+        this.userService = userService;
+    }
 
     @PostMapping("/{amount}")
     public ResponseEntity<String> withdrawalRequest(@PathVariable Long amount, @RequestHeader("Authorization") String jwt){
         User user = userService.findUserByJwt(jwt);
+        if(!user.getTwoFactorAuth().isEnable()){
+            return new ResponseEntity<>("You must enable TFA in order to withdraw", HttpStatus.FORBIDDEN);
+        }
+
         Wallet wallet = walletService.getUserWallet(user);
 
         Withdrawal withdrawal = withdrawalService.requestWithdrawal(user, amount);
         walletService.addBalance(wallet, -amount);
 
-        return ResponseEntity.ok("Withdrawal request from user " + user.getFullName() + " with ID: " + user.getId() + " was sent successfully");
+        return ResponseEntity.ok("Withdrawal request: " + withdrawal.getId() +  " from user " + user.getFullName() + " with ID: " + user.getId() + " was sent successfully");
     }
 
-    @PatchMapping("/{id}/proceed/{accepted}")
+    @PatchMapping("/{id}/proceed/{isAccepted}")
     public ResponseEntity<String> proceedWithdrawal(@RequestHeader("Authorization") String jwt, @PathVariable Long id, @PathVariable boolean isAccepted) throws Exception {
         User user = userService.findUserByJwt(jwt);
         Withdrawal withdrawal = withdrawalService.proceedWithdrawal(id, isAccepted);

@@ -2,7 +2,6 @@ package com.stan.cryptoTrading.service;
 
 import com.stan.cryptoTrading.modal.User;
 import com.stan.cryptoTrading.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,8 +14,12 @@ import java.util.List;
 @Service
 public class CustomUserService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public CustomUserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     //EMAIL is the username
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

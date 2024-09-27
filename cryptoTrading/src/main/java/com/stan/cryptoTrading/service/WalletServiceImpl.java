@@ -5,7 +5,6 @@ import com.stan.cryptoTrading.modal.enums.OrderType;
 import com.stan.cryptoTrading.modal.User;
 import com.stan.cryptoTrading.modal.Wallet;
 import com.stan.cryptoTrading.repository.WalletRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -13,8 +12,11 @@ import java.math.BigDecimal;
 @Service
 public class WalletServiceImpl implements WalletService{
 
-    @Autowired
-    private WalletRepository walletRepository;
+    private final WalletRepository walletRepository;
+
+    public WalletServiceImpl(WalletRepository walletRepository) {
+        this.walletRepository = walletRepository;
+    }
 
     @Override
     public Wallet createWallet(User user) {
@@ -60,7 +62,7 @@ public class WalletServiceImpl implements WalletService{
     public Wallet transferToWallet(User sender, Wallet receiverWallet, Long amount) throws Exception {
         Wallet senderWallet = getUserWallet(sender);
         if(senderWallet.getBalance().compareTo(BigDecimal.valueOf(amount)) < 0){
-            throw new Exception("Balance not enough for transaction");
+            throw new RuntimeException("Balance not enough for transaction");
         }
         //Update the sender wallet balance
         BigDecimal senderBalance = senderWallet.getBalance().subtract(BigDecimal.valueOf(amount));

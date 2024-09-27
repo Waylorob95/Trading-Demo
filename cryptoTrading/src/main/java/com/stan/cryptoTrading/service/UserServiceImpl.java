@@ -5,15 +5,17 @@ import com.stan.cryptoTrading.modal.TwoFactorAuth;
 import com.stan.cryptoTrading.modal.User;
 import com.stan.cryptoTrading.modal.enums.VerificationType;
 import com.stan.cryptoTrading.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService{
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     //Find user by Jwt
     @Override
@@ -48,9 +50,9 @@ public class UserServiceImpl implements UserService{
     public User enableOtpAuthentication(User user, VerificationType verificationType, String sentTo) {
 
         //Check if user already has enabled the authentication
-//        if(user.getTwoFactorAuth().equals(true)){
-//            throw new RuntimeException("Otp authentication already enabled");
-//        }
+        if(user.getTwoFactorAuth().equals(true)){
+           throw new RuntimeException("Otp authentication already enabled");
+        }
         TwoFactorAuth twoFactorAuth = new TwoFactorAuth();
         twoFactorAuth.setEnable(true);
         twoFactorAuth.setSentTo(verificationType);

@@ -5,7 +5,6 @@ import com.stan.cryptoTrading.modal.enums.OrderType;
 import com.stan.cryptoTrading.service.CoinService;
 import com.stan.cryptoTrading.service.OrderService;
 import com.stan.cryptoTrading.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,18 +15,27 @@ import java.util.List;
 @RequestMapping("/api/orders")
 public class OrderController {
 
-    @Autowired
-    private OrderService orderService;
+    private final OrderService orderService;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private CoinService coinService;
+    private final CoinService coinService;
+
+    public OrderController(OrderService orderService, UserService userService, CoinService coinService) {
+        this.orderService = orderService;
+        this.userService = userService;
+        this.coinService = coinService;
+    }
+
 
     @PostMapping("/pay")
-    public ResponseEntity<Order> payOrder(@RequestHeader("Authorization") String jwt, @RequestBody CreateOrderRequest orderRequest) throws Exception {
+    public ResponseEntity<?> payOrder(@RequestHeader("Authorization") String jwt, @RequestBody CreateOrderRequest orderRequest) throws Exception {
        User user = userService.findUserByJwt(jwt);
+
+        if(!user.getTwoFactorAuth().isEnable()){
+            return new ResponseEntity<>("You have to enable TFA in order to proceed the order", HttpStatus.FORBIDDEN);
+        }
+
        Coin coin = coinService.getCoinById(orderRequest.getCoinId());
 
        Order order = orderService.processOrder(coin, orderRequest.getQuantity(), orderRequest.getOrderType(), user);

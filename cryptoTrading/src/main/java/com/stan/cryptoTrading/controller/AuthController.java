@@ -11,7 +11,6 @@ import com.stan.cryptoTrading.service.TwoFactorOtpService;
 import com.stan.cryptoTrading.service.WalletService;
 import com.stan.cryptoTrading.repository.UserRepository;
 import com.stan.cryptoTrading.response.AuthResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -26,20 +25,23 @@ import com.stan.cryptoTrading.utils.OtpUtils;
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private CustomUserService customUserService;
+    private final CustomUserService customUserService;
 
-    @Autowired
-    private TwoFactorOtpService twoFactorOtpServiceImpl;
+    private final TwoFactorOtpService twoFactorOtpServiceImpl;
 
-    @Autowired
-    private EmailService emailService;
+    private final EmailService emailService;
 
-    @Autowired
-    private WalletService walletService;
+    private final WalletService walletService;
+
+    public AuthController(UserRepository userRepository, CustomUserService customUserService, TwoFactorOtpService twoFactorOtpServiceImpl, EmailService emailService, WalletService walletService) {
+        this.userRepository = userRepository;
+        this.customUserService = customUserService;
+        this.twoFactorOtpServiceImpl = twoFactorOtpServiceImpl;
+        this.emailService = emailService;
+        this.walletService = walletService;
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> register(@RequestBody User user) throws Exception {
@@ -91,38 +93,41 @@ public class AuthController {
         User authUser = userRepository.findByEmail(user.getEmail());
 
         //check if two-factor auth is enabled
-        if(authUser.getTwoFactorAuth().isEnable()){
+        if(!authUser.getTwoFactorAuth().isEnable()){
             AuthResponse authResponse = new AuthResponse();
-            authResponse.setMessage("Two factor auth is enabled");
-            authResponse.setTwoFactorEnabled(true);
+            authResponse.setJwtToken(jwtToken);
+            authResponse.setMessage("Singing successfully. You can enable TFA for better security");
+            authResponse.setTwoFactorEnabled(authUser.getTwoFactorAuth().isEnable());
             authResponse.setStatus(true);
-            String otp = OtpUtils.generateOtp();
 
-            //if there is old otp it will delete it
-            TwoFactorOTP oldTwoFactorOTP = twoFactorOtpServiceImpl.findByUser(authUser.getId());
-            if(oldTwoFactorOTP != null){
-                twoFactorOtpServiceImpl.deleteOtp(oldTwoFactorOTP);
-            }
-
-            //otherwise it creates new
-            TwoFactorOTP newTwoFactorOTP = twoFactorOtpServiceImpl.createTwoFactorOtp(
-                    authUser,
-                    otp,
-                    jwtToken
-            );
-
-            //send EMAIL for verification
-            emailService.sendVerification(user.getEmail(), otp);
-
-            authResponse.setSession(newTwoFactorOTP.getId());
             return new ResponseEntity<>(authResponse, HttpStatus.ACCEPTED);
             }
 
         //Set response
+        String otp = OtpUtils.generateOtp();
+
+        //if there is old otp it will delete it
+        TwoFactorOTP oldTwoFactorOTP = twoFactorOtpServiceImpl.findByUser(authUser.getId());
+        if(oldTwoFactorOTP != null){
+            twoFactorOtpServiceImpl.deleteOtp(oldTwoFactorOTP);
+        }
+
+        //otherwise it creates new
+        TwoFactorOTP newTwoFactorOTP = twoFactorOtpServiceImpl.createTwoFactorOtp(
+                authUser,
+                otp,
+                jwtToken
+        );
+
+        //send EMAIL for verification
+        emailService.sendVerification(user.getEmail(), otp);
+
         AuthResponse authResponse = new AuthResponse();
         authResponse.setJwtToken(jwtToken);
         authResponse.setStatus(true);
         authResponse.setMessage("Singing successfully");
+        authResponse.setTwoFactorEnabled(authUser.getTwoFactorAuth().isEnable());
+        authResponse.setSession(newTwoFactorOTP.getId());
 
         return new ResponseEntity<>(authResponse, HttpStatus.OK);
     }

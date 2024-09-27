@@ -6,7 +6,6 @@ import com.stan.cryptoTrading.modal.enums.OrderType;
 import com.stan.cryptoTrading.repository.OrderItemRepository;
 import com.stan.cryptoTrading.repository.OrderRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,17 +15,17 @@ import java.util.List;
 @Service
 public class OrderServiceImpl implements OrderService{
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final AssetService assetService;
+    private final WalletService walletService;
 
-    @Autowired
-    private WalletService walletService;
-
-    @Autowired
-    private OrderItemRepository orderItemRepository;
-
-    @Autowired
-    private AssetService assetService;
+    public OrderServiceImpl(OrderRepository orderRepository, WalletService walletService, OrderItemRepository orderItemRepository, AssetService assetService) {
+        this.orderRepository = orderRepository;
+        this.orderItemRepository = orderItemRepository;
+        this.assetService = assetService;
+        this.walletService = walletService;
+    }
 
     @Override
     public Order createOrder(User user, OrderItem orderItem, OrderType orderType) {
@@ -73,7 +72,6 @@ public class OrderServiceImpl implements OrderService{
         } else {
             assetService.updateAsset(asset.getId(), quantity);
         }
-
 
         return orderRepository.save(order);
     }

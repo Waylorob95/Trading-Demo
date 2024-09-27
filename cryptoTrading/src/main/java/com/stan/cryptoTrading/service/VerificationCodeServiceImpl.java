@@ -4,15 +4,17 @@ import com.stan.cryptoTrading.modal.User;
 import com.stan.cryptoTrading.modal.enums.VerificationType;
 import com.stan.cryptoTrading.modal.VerificationCode;
 import com.stan.cryptoTrading.repository.VerificationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.stan.cryptoTrading.utils.OtpUtils;
 
 @Service
 public class VerificationCodeServiceImpl implements VerificationCodeService {
 
-    @Autowired
-    private VerificationRepository verificationRepository;
+    private final VerificationRepository verificationRepository;
+
+    public VerificationCodeServiceImpl(VerificationRepository verificationRepository) {
+        this.verificationRepository = verificationRepository;
+    }
 
     //Method for sending verification code
     @Override

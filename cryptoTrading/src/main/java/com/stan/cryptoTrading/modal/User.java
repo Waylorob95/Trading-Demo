@@ -21,5 +21,5 @@ public class User {
     private UserRole role = UserRole.CUSTOMER;
 
     @Embedded
-    private TwoFactorAuth twoFactorAuth;
+    private TwoFactorAuth twoFactorAuth = new TwoFactorAuth();
 }

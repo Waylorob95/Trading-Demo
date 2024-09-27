@@ -3,14 +3,16 @@ package com.stan.cryptoTrading.service;
 import com.stan.cryptoTrading.modal.PaymentDetails;
 import com.stan.cryptoTrading.modal.User;
 import com.stan.cryptoTrading.repository.PaymentDetailsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PaymentServiceImpl implements PaymentDetailsService{
 
-    @Autowired
-    private PaymentDetailsRepository paymentDetailsRepository;
+    private final PaymentDetailsRepository paymentDetailsRepository;
+
+    public PaymentServiceImpl(PaymentDetailsRepository paymentDetailsRepository){
+        this.paymentDetailsRepository = paymentDetailsRepository;
+    }
 
     @Override
     public PaymentDetails addPaymentDetails(String accountNumber, String bankName, String cvv, User user) {

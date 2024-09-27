@@ -9,7 +9,6 @@ import com.stan.cryptoTrading.service.UserService;
 import com.stan.cryptoTrading.service.VerificationCodeService;
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,17 +16,19 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    private EmailService emailService;
+    private final EmailService emailService;
+    private final VerificationCodeService verificationCodeService;
 
-    @Autowired
-    private VerificationCodeService verificationCodeService;
+    private final TwoFactorOtpService twoFactorOtpService;
 
-    @Autowired
-    private TwoFactorOtpService twoFactorOtpService;
+    public UserController(UserService userService, EmailService emailService, VerificationCodeService verificationCodeService, TwoFactorOtpService twoFactorOtpService) {
+        this.userService = userService;
+        this.emailService = emailService;
+        this.verificationCodeService = verificationCodeService;
+        this.twoFactorOtpService = twoFactorOtpService;
+    }
 
     @GetMapping("api/users/profile")
     public ResponseEntity<User> getUserProfile(@RequestHeader("Authorization") String jwt){

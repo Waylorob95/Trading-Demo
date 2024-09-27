@@ -4,7 +4,6 @@ import com.stan.cryptoTrading.modal.Asset;
 import com.stan.cryptoTrading.modal.User;
 import com.stan.cryptoTrading.service.AssetService;
 import com.stan.cryptoTrading.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,11 +14,15 @@ import java.util.List;
 @RequestMapping("api/assets")
 public class AssetController {
 
-    @Autowired
-    private AssetService assetService;
+    private final AssetService assetService;
 
-    @Autowired
-    private UserService userService;
+
+    private final UserService userService;
+
+    public AssetController(AssetService assetService, UserService userService) {
+        this.assetService = assetService;
+        this.userService = userService;
+    }
 
     @GetMapping("{assetId}")
     public ResponseEntity<Asset> getAssetById(@PathVariable Long assetId) throws Exception {

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stan.cryptoTrading.modal.Coin;
 import com.stan.cryptoTrading.repository.CoinRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,11 +20,14 @@ import java.util.Optional;
 @Service
 public class CoinServiceImpl implements CoinService{
 
-    @Autowired
-    private CoinRepository coinRepository;
+    private final CoinRepository coinRepository;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+
+    public CoinServiceImpl(CoinRepository coinRepository, ObjectMapper objectMapper){
+        this.coinRepository = coinRepository;
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public List<Coin> getCoinList(int page) throws Exception {
@@ -115,8 +117,7 @@ public class CoinServiceImpl implements CoinService{
             coin.setTotalSupply(marketData.get("total_supply").asDouble());
             coin.setCirculatingSupply(marketData.get("circulating_supply").asDouble());
 
-//            coin.setMaxSupply(marketData.get("max_supply").asDouble());
-//            coin.setFullyDilutedValuation(jsonNode.get("fully_diluted_valuation").asLong());
+
             coinRepository.save(coin);
 
             return response.getBody();
@@ -129,25 +130,6 @@ public class CoinServiceImpl implements CoinService{
     @Override
     public String searchCoin(String keyword) throws Exception {
         String url = "https://api.coingecko.com/api/v3/search?query="+keyword;
-
-        RestTemplate restTemplate = new RestTemplate();
-
-        try{
-            HttpHeaders headers = new HttpHeaders();
-            HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
-
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-
-            return response.getBody();
-        }
-        catch (HttpClientErrorException | HttpServerErrorException exception){
-            throw new Exception(exception.getMessage());
-        }
-    }
-    //currently not working
-    @Override
-    public String getTop50CoinMarketCap() throws Exception {
-        String url = "https://api.coingecko.com/api/v3/coins/markets/vs_currency=usd&per_page=50&page=1";
 
         RestTemplate restTemplate = new RestTemplate();
 

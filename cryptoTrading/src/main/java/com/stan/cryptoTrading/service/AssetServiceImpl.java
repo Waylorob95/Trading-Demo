@@ -4,7 +4,6 @@ import com.stan.cryptoTrading.modal.Asset;
 import com.stan.cryptoTrading.modal.Coin;
 import com.stan.cryptoTrading.modal.User;
 import com.stan.cryptoTrading.repository.AssetRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,8 +11,11 @@ import java.util.List;
 @Service
 public class AssetServiceImpl implements AssetService{
 
-    @Autowired
-    private AssetRepository assetRepository;
+    private final AssetRepository assetRepository;
+
+    public AssetServiceImpl(AssetRepository assetRepository) {
+        this.assetRepository = assetRepository;
+    }
 
     @Override
     public Asset createAsset(User user, Coin coin, double quantity) {

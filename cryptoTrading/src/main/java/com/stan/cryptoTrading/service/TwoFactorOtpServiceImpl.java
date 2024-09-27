@@ -3,7 +3,6 @@ package com.stan.cryptoTrading.service;
 import com.stan.cryptoTrading.modal.TwoFactorOTP;
 import com.stan.cryptoTrading.modal.User;
 import com.stan.cryptoTrading.repository.TwoFactorOtpRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -12,8 +11,10 @@ import java.util.UUID;
 @Service
 public class TwoFactorOtpServiceImpl implements TwoFactorOtpService{
 
-    @Autowired
-    private TwoFactorOtpRepository twoFactorOtpRepository;
+    private final TwoFactorOtpRepository twoFactorOtpRepository;
+    public TwoFactorOtpServiceImpl(TwoFactorOtpRepository twoFactorOtpRepository) {
+        this.twoFactorOtpRepository = twoFactorOtpRepository;
+    }
 
     @Override
     public TwoFactorOTP createTwoFactorOtp(User user, String otp, String jwt) {
